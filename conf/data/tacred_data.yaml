@@ -1,12 +1,12 @@
 # @package _global_
 
 num_workers: 8
-dataset_name: '/home/martinez/rebel/datasets/tacred-punct.py'
+dataset_name: 'datasets/tacred-punct.py'
 text_column: 'context'
 target_column: 'triplets'
-train_file: '/home/martinez/rebel/data/tacred/data/json_re/train.json'
-validation_file: '/home/martinez/rebel/data/tacred/data/json_re/dev.json'
-test_file: '/home/martinez/rebel/data/tacred/data/json_re/test.json'
+train_file: 'data/tacred/data/json_re/train.json'
+validation_file: 'data/tacred/data/json_re/dev.json'
+test_file: 'data/tacred/data/json_re/test.json'
 overwrite_cache: False
 preprocessing_num_workers: 
 max_source_length: 1024
@@ -20,4 +20,4 @@ num_beams:
 eval_beams: 3
 ignore_pad_token_for_loss: True
 source_prefix: 
-relations_file: False
+relations_file:
