@@ -100,13 +100,14 @@ def train(conf: omegaconf.DictConfig) -> None:
     pl_module.hparams.test_file = pl_data_module.conf.test_file
     # trainer
     trainer = pl.Trainer(
-        gpus=conf.gpus,
+        accelerator="gpu" if conf.gpus else "cpu",
+        devices=conf.gpus if conf.gpus else None,
     )
     # Manually run prep methods on DataModule
     pl_data_module.prepare_data()
     pl_data_module.setup()
 
-    trainer.test(pl_module, test_dataloaders=pl_data_module.test_dataloader())
+    trainer.test(pl_module, dataloaders=pl_data_module.test_dataloader())
 
 
 @hydra.main(config_path='../conf', config_name='root')
