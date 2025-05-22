@@ -1,19 +1,17 @@
-from typing import Any, Union, List, Optional
+from typing import List, Union
 
-from omegaconf import DictConfig
-
-import torch
-from torch.utils.data import DataLoader
 import pytorch_lightning as pl
-from datasets import load_dataset, set_caching_enabled
+from omegaconf import DictConfig
+from torch.utils.data import DataLoader
 from transformers import (
-    AutoConfig,
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
     DataCollatorForSeq2Seq,
     default_data_collator,
-    set_seed,
 )
+
+from datasets import load_dataset
+
 
 class BasePLDataModule(pl.LightningDataModule):
     """
@@ -63,10 +61,20 @@ class BasePLDataModule(pl.LightningDataModule):
         self.tokenizer = tokenizer
         self.model = model
         if conf.relations_file:
-            self.datasets = load_dataset(conf.dataset_name, data_files={'train': conf.train_file, 'dev': conf.validation_file, 'test': conf.test_file, 'relations': conf.relations_file})
+            self.datasets = load_dataset(
+                conf.dataset_name,
+                data_files={
+                    "train": conf.train_file,
+                    "dev": conf.validation_file,
+                    "test": conf.test_file,
+                    "relations": conf.relations_file,
+                },
+            )
         else:
-            self.datasets = load_dataset(conf.dataset_name, data_files={'train': conf.train_file, 'dev': conf.validation_file, 'test': conf.test_file})
-        set_caching_enabled(True)
+            self.datasets = load_dataset(
+                conf.dataset_name,
+                data_files={"train": conf.train_file, "dev": conf.validation_file, "test": conf.test_file},
+            )
         self.prefix = conf.source_prefix if conf.source_prefix is not None else ""
         self.column_names = self.datasets["train"].column_names
         # self.source_lang, self.target_lang, self.text_column, self.summary_column = None, None, None, None
@@ -80,7 +88,9 @@ class BasePLDataModule(pl.LightningDataModule):
         if conf.pad_to_max_length:
             self.data_collator = default_data_collator
         else:
-            self.data_collator = DataCollatorForSeq2Seq(self.tokenizer, self.model, label_pad_token_id=label_pad_token_id)
+            self.data_collator = DataCollatorForSeq2Seq(
+                self.tokenizer, self.model, label_pad_token_id=label_pad_token_id
+            )
 
     def prepare_data(self, *args, **kwargs):
         self.train_dataset = self.datasets["train"]
@@ -94,7 +104,8 @@ class BasePLDataModule(pl.LightningDataModule):
             num_proc=self.conf.preprocessing_num_workers,
             remove_columns=self.column_names,
             load_from_cache_file=not self.conf.overwrite_cache,
-            cache_file_name=self.conf.train_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+            cache_file_name=self.conf.train_file.replace(".jsonl", "-")
+            + self.conf.dataset_name.split("/")[-1].replace(".py", ".cache"),
         )
 
         if self.conf.do_eval:
@@ -110,7 +121,8 @@ class BasePLDataModule(pl.LightningDataModule):
                 num_proc=self.conf.preprocessing_num_workers,
                 remove_columns=self.column_names,
                 load_from_cache_file=not self.conf.overwrite_cache,
-                cache_file_name=self.conf.validation_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+                cache_file_name=self.conf.validation_file.replace(".jsonl", "-")
+                + self.conf.dataset_name.split("/")[-1].replace(".py", ".cache"),
             )
 
         if self.conf.do_predict:
@@ -126,7 +138,8 @@ class BasePLDataModule(pl.LightningDataModule):
                 num_proc=self.conf.preprocessing_num_workers,
                 remove_columns=self.column_names,
                 load_from_cache_file=not self.conf.overwrite_cache,
-                cache_file_name=self.conf.test_file.replace('.jsonl', '-') + self.conf.dataset_name.split('/')[-1].replace('.py', '.cache'),
+                cache_file_name=self.conf.test_file.replace(".jsonl", "-")
+                + self.conf.dataset_name.split("/")[-1].replace(".py", ".cache"),
             )
 
     def train_dataloader(self, *args, **kwargs) -> DataLoader:
@@ -138,7 +151,7 @@ class BasePLDataModule(pl.LightningDataModule):
             drop_last=self.conf.dataloader_drop_last,
             num_workers=self.conf.dataloader_num_workers,
             pin_memory=self.conf.dataloader_pin_memory,
-            shuffle=True
+            shuffle=True,
         )
 
     def val_dataloader(self, *args, **kwargs) -> Union[DataLoader, List[DataLoader]]:
@@ -171,7 +184,9 @@ class BasePLDataModule(pl.LightningDataModule):
         inputs = examples[self.text_column]
         targets = examples[self.summary_column]
         inputs = [self.prefix + inp for inp in inputs]
-        model_inputs = self.tokenizer(inputs, max_length=self.conf.max_source_length, padding=self.padding, truncation=True)
+        model_inputs = self.tokenizer(
+            inputs, max_length=self.conf.max_source_length, padding=self.padding, truncation=True
+        )
 
         # Setup the tokenizer for targets
         with self.tokenizer.as_target_tokenizer():
