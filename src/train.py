@@ -90,22 +90,20 @@ def train(conf: omegaconf.DictConfig) -> None:
     callbacks_store.append(LearningRateMonitor(logging_interval="step"))
     # trainer
     trainer = pl.Trainer(
-        gpus=conf.gpus,
+        accelerator="gpu" if conf.gpus else "cpu",
+        devices=conf.gpus if conf.gpus else None,
         accumulate_grad_batches=conf.gradient_acc_steps,
         gradient_clip_val=conf.gradient_clip_value,
         val_check_interval=conf.val_check_interval,
         callbacks=callbacks_store,
         max_steps=conf.max_steps,
-        # max_steps=total_steps,
         precision=conf.precision,
-        amp_level=conf.amp_level,
         logger=wandb_logger,
-        resume_from_checkpoint=conf.checkpoint_path,
         limit_val_batches=conf.val_percent_check,
     )
 
     # module fit
-    trainer.fit(pl_module, datamodule=pl_data_module)
+    trainer.fit(pl_module, datamodule=pl_data_module, ckpt_path=conf.checkpoint_path)
 
 
 @hydra.main(config_path="../conf", config_name="root")
