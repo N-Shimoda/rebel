@@ -126,7 +126,10 @@ REBEL dataset can be recreated using our RE dataset creator [CROCODILE](https://
 
 ## Training and testing
 
-There are conf files to train and test each model. Within the src folder to train for CONLL04 for instance:
+There are conf files to train and test each model. Make sure the
+dataset files produced by the `fetch_datasets.sh` script are copied
+under `data/conll04/` before training. Within the src folder to train
+for CONLL04 for instance:
 
     train.py model=rebel_model data=conll04_data train=conll04_train
 
@@ -190,6 +193,19 @@ for value, rel_dict in doc._.rel.items():
 TACRED is not freely avialable but instructions on how to create Re-TACRED from it can be found [here](https://github.com/gstoica27/Re-TACRED).
 
 For CONLL04 and ADE one can use the script from the [SpERT github](https://github.com/lavis-nlp/spert/blob/master/scripts/fetch_datasets.sh).
+
+To download CONLL04 you can run:
+
+```bash
+git clone https://github.com/lavis-nlp/spert
+cd spert/scripts
+bash fetch_datasets.sh conll04
+```
+
+This will create the JSON files inside `spert/datasets/conll04`. Copy
+`conll04_train.json`, `conll04_dev.json` and `conll04_test.json` into
+`data/conll04/` in this repository so the training scripts can locate
+them.
 
 For NYT the dataset can be downloaded from [JointER github](https://github.com/yubowen-ph/JointER/tree/master/dataset/NYT-multi/data).
 
