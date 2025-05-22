@@ -52,14 +52,18 @@ Repo structure
   | test.py  # main script for training the network
 | README.md
 | requirements.txt
+| environment.yml # conda environment specification
 | demo.py # Streamlit demo to try out the model
-| setup.sh # environment setup script 
+| setup.sh # environment setup script
 ```
 
 ## Initialize environment
-In order to set up the python interpreter we utilize [conda](https://docs.conda.io/projects/conda/en/latest/index.html)
-, the script setup.sh creates a conda environment and install pytorch
-and the dependencies in "requirements.txt". 
+In order to set up the Python interpreter we utilize [conda](https://docs.conda.io/projects/conda/en/latest/index.html).
+Run the provided script to create and activate the environment specified in `environment.yml`:
+
+```bash
+bash setup.sh
+```
 
 ## REBEL Model and Dataset
 

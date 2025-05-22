@@ -1,0 +1,27 @@
+name: rebel
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.8
+  - pytorch>=1.12
+  - torchvision
+  - pip
+  - pytorch-lightning>=1.7
+  - pandas
+  - numpy
+  - nltk
+  - spacy>=3.0
+  - pip:
+      - transformers>=4.20
+      - datasets>=2.0
+      - omegaconf==2.0.6
+      - hydra-core==1.0.6
+      - neptune-client==0.5.1
+      - psutil==5.8.0
+      - rouge-score==0.0.4
+      - sacrebleu==1.5.0
+      - wandb==0.10.26
+      - streamlit==0.82.0
+
